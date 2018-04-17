@@ -1,11 +1,19 @@
 # app.py
 import os
+import logging
 
 import boto3
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint
+from flask_restplus import Resource, Api, fields, reqparse
+from datetime import datetime
 
+# ==== INIT ====
 app = Flask(__name__)
+blueprint = Blueprint('api', __name__, url_prefix='/api')
+api = Api(blueprint, version='1.0', title='User API', description='Sample api to manage users')
+app.register_blueprint(blueprint)
+log = logging.getLogger(__name__)
 
 USERS_TABLE = os.environ['USERS_TABLE']
 IS_OFFLINE = os.environ.get('IS_OFFLINE')
@@ -19,44 +27,103 @@ if IS_OFFLINE:
 else:
     client = boto3.client('dynamodb')
 
-@app.route("/")
-def hello():
-    return "Hello World, Blas!"
+# ==== API ====
+ns = api.namespace('v1', 'Operations on user resources')
 
-@app.route("/users/<string:user_id>")
-def get_user(user_id):
-    resp = client.get_item(
-        TableName=USERS_TABLE,
-        Key={
-            'userId': { 'S': user_id }
+# ==== MODEL DEFINITIONS ==== 
+user_view = api.model('User', {
+    'user_id': fields.Integer(required=True, min=0),
+    'name': fields.String(required=True, min_length=3, max_length=200),
+    'created_date': fields.DateTime(dt_format='iso8601'),
+})
+
+user_list_view = api.model('UserCollection', {
+    'items': fields.List(fields.Nested(user_view))
+})
+
+class User(object):
+    def __init__(self, user_id, name):
+        self.user_id = user_id
+        self.name = name
+        self.created_date = datetime.now()
+
+# ==== FUNCTIONS ====
+@ns.route('/health')
+class HealthCheck(Resource):
+    def get(self):
+        return {
+            'message': 'Server is healthy'
         }
-    )
-    item = resp.get('Item')
-    if not item:
-        return jsonify({'error': 'User does not exist'}), 404
-    return jsonify(
-        {
-            'userId': item.get('userId').get('S'),
-            'name': item.get('name').get('S')
+
+@ns.route('/users/<string:user_id>')
+@api.doc(params={'user_id': 'User identifier'})
+class UserSingle(Resource):
+    @api.marshal_with(user_view, code=200, description='User response')
+    @api.response(200, 'Success')
+    @api.doc('Get single user')
+    def get(self, **kwargs):
+        log.info('Hello')
+        return User(1, 'Demo')
+    
+    @api.expect(user_view, validate=True)
+    @api.response(202, 'User updated')
+    @api.doc('Update existing user')
+    def put(self, **kwargs):
+        return request.json
+
+
+@ns.route('/users')
+class UserCollection(Resource):
+    @api.marshal_with(user_list_view)
+    @api.response(200, 'Success')
+    @api.doc('Get all users')
+    def get(self, **kwargs):
+        list = []
+        for x in range(10):
+            list.append(User(x, 'Test' + str(x)))
+        return {
+            'items': list
         }
-    )
 
-@app.route("/users", methods=["POST"])
-def create_user():
-    user_id = request.json.get('userId')
-    name = request.json.get('name')
-    if not user_id or not name:
-        return jsonify({'error': 'Please provider userId and name'}), 400
+    @api.response(201, 'User created')
+    @api.expect(user_view, validate=True)
+    @api.doc('Create new user')
+    def post(self, **kwargs):
+        user_id = request.json.get('user_id')
+        name = request.json.get('name')
+        if not user_id or not name:
+            return jsonify({'error': 'Please provider user_id and name'}), 400
 
-    resp = client.put_item(
-        TableName=USERS_TABLE,
-        Item={
-            'userId': {'S': user_id},
-            'name': {'S': name}
-        }
-    )
+        client.put_item(
+            TableName=USERS_TABLE,
+            Item={
+                'user_id': {'S': user_id},
+                'name': {'S': name}
+            }
+        )
 
-    return jsonify({
-        'userId': user_id,
-        'name': name
-    })
+        return jsonify({
+            'user_id': user_id,
+            'name': name
+        })
+
+# def get_user(user_id):
+#     resp = client.get_item(
+#         TableName=USERS_TABLE,
+#         Key={
+#             'user_id': { 'S': user_id }
+#         }
+#     )
+#     item = resp.get('Item')
+#     if not item:
+#         return jsonify({'error': 'User does not exist'}), 404
+#     return jsonify(
+#         {
+#             'user_id': item.get('user_id').get('S'),
+#             'name': item.get('name').get('S')
+#         }
+#     )
+
+
+if __name__ == '__main__':
+    app.run(debug=False)

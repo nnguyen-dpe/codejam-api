@@ -1,6 +1,11 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+### Cooking ingredients? ###
+- Python Flask, Flask RestPlus
+- Serverless Framework
+- AWS Lambda, AWS DynamoDB
+- Swagger 2.0
+
 
 ### What is this repository for? ###
 
@@ -20,23 +25,50 @@ npm install serverless -g
 ```
 git clone git@dpe.bitbucket.org:thebugspikers/codejam-api.git
 cd codejam-api
+
 npm init -f
-npm install --save-dev serverless-wsgi serverless-python-requirements serverless-dynamodb-local
+npm install --save-dev serverless-wsgi serverless-python-requirements serverless-dynamodb-local serverless-offline
+
 virtualenv venv --python=python3
 source venv/bin/activate
+
 pip install flask
 pip install boto3
+pip install flask-restplus
 pip freeze > requirements.txt
 ```
 * Test locally:
 ```
+# Test flask app
 sls wsgi serve
+
+# Test off line Aws lambda and gateway
+sls offline
 ```
 * Deploy to AWS:
 ```
+# Deploy all
 sls deploy
+
+# Deploy one
+sls deploy function -f myFuncName
+
+# Tail log
+sls logs -f myFuncName -t
+```
+
+* Remove stack:
+```
+sls remove
 ```
 
 ### References
 
 * https://serverless.com/blog/flask-python-rest-api-serverless-lambda-dynamodb/
+
+### Todos:
+
+* CI/CD using CodePipeline & CodeBuild
+* Deploy to kubernetes cluster (OpenWhisk/Kubeless)
+* Add unit tests
+* Refactor app structure using blueprint

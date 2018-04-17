@@ -6,6 +6,7 @@ plugins:
   - serverless-python-requirements
   - serverless-wsgi
   - serverless-dynamodb-local
+  - serverless-offline
 
 custom:
   tableName: 'users-table-${self:provider.stage}'
@@ -46,16 +47,24 @@ functions:
   app:
     handler: wsgi.handler
     events:
-      - http: ANY /
+      - http: ANY /api
       - http: 'ANY {proxy+}'
   getUser:
     handler: wsgi.handler
     events:
-      - http: 'GET /users/{proxy+}'
+      - http: 'GET /api/v1/users/{proxy+}'
+  updateUser:
+    handler: wsgi.handler
+    events:
+      - http: 'PUT /api/v1/users/{proxy+}'
   createUser:
     handler: wsgi.handler
     events:
-      - http: 'POST /users'
+      - http: 'POST /api/v1/users'
+  getUsers:
+    handler: wsgi.handler
+    events:
+      - http: 'GET /api/v1/users'
 
 resources:
   Resources:
@@ -64,11 +73,11 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: userId
+            AttributeName: user_id
             AttributeType: S
         KeySchema:
           -
-            AttributeName: userId
+            AttributeName: user_id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
