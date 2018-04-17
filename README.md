@@ -1,28 +1,28 @@
-# README #
+# THE BUG SPIKERS
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-### Cooking ingredients? ###
+## What is this repository for? 
+
+* 2018-04-18 Forum
+
+## Cooking ingredients? 
 - Python Flask, Flask RestPlus
 - Serverless Framework
 - AWS Lambda, AWS DynamoDB
 - Swagger 2.0
 
-
-### What is this repository for? ###
-
-* 2018-04-18 Forum
-
-### How do I get set up & running? ###
+## How do I get set up & running? 
 
 * Prerequisites: 
-```
+```sh
 node, npm, python3, pip3, virtualenv
 ```
 * Install Serverless & dependencies:
-```
+```sh
 npm install serverless -g
 ```
 * Install:
-```
+```sh
 git clone git@dpe.bitbucket.org:thebugspikers/codejam-api.git
 cd codejam-api
 
@@ -38,7 +38,7 @@ pip install flask-restplus
 pip freeze > requirements.txt
 ```
 * Test locally:
-```
+```sh
 # Test flask app
 sls wsgi serve
 
@@ -46,7 +46,7 @@ sls wsgi serve
 sls offline
 ```
 * Deploy to AWS:
-```
+```sh
 # Deploy all
 sls deploy
 
@@ -58,15 +58,15 @@ sls logs -f myFuncName -t
 ```
 
 * Remove stack:
-```
+```sh
 sls remove
 ```
 
-### References
+## References
 
 * https://serverless.com/blog/flask-python-rest-api-serverless-lambda-dynamodb/
 
-### Todos:
+## Todos:
 
 * CI/CD using CodePipeline & CodeBuild
 * Deploy to kubernetes cluster (OpenWhisk/Kubeless)
