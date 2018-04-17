@@ -8,7 +8,6 @@ This README would normally document whatever steps are necessary to get your app
 
 ### How do I get set up & running? ###
 
-
 * Prerequisites: 
 ```
 node, npm, python3, pip3, virtualenv
@@ -22,14 +21,18 @@ npm install serverless -g
 git clone git@dpe.bitbucket.org:thebugspikers/codejam-api.git
 cd codejam-api
 npm init -f
-npm install --save-dev serverless-wsgi serverless-python-requirements
+npm install --save-dev serverless-wsgi serverless-python-requirements serverless-dynamodb-local
 virtualenv venv --python=python3
 source venv/bin/activate
 pip install flask
 pip install boto3
 pip freeze > requirements.txt
 ```
-* Run:
+* Test locally:
+```
+sls wsgi serve
+```
+* Deploy to AWS:
 ```
 sls deploy
 ```

@@ -5,6 +5,7 @@ service: serverless-flask
 plugins:
   - serverless-python-requirements
   - serverless-wsgi
+  - serverless-dynamodb-local
 
 custom:
   tableName: 'users-table-${self:provider.stage}'
@@ -13,6 +14,14 @@ custom:
     packRequirements: false
   pythonRequirements:
     dockerizePip: non-linux
+  # dynamodb:
+  #   start:
+  #     migrate: true
+
+package:
+  exclude:
+    - node_modules/**
+    - venv/**
 
 provider:
   name: aws
@@ -39,6 +48,14 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+  getUser:
+    handler: wsgi.handler
+    events:
+      - http: 'GET /users/{proxy+}'
+  createUser:
+    handler: wsgi.handler
+    events:
+      - http: 'POST /users'
 
 resources:
   Resources:
