@@ -6,15 +6,18 @@ This README would normally document whatever steps are necessary to get your app
 
 * 2018-04-18 Forum
 
-### How do I get set up? ###
+### How do I get set up & running? ###
 
 
-* Prerequisites: ```node, npm, python3, pip3, virtualenv```
+* Prerequisites: 
+```
+node, npm, python3, pip3, virtualenv
+```
 * Install Serverless & dependencies:
 ```
 npm install serverless -g
 ```
-* Install project:
+* Install:
 ```
 git clone git@dpe.bitbucket.org:thebugspikers/codejam-api.git
 cd codejam-api
@@ -25,6 +28,10 @@ source venv/bin/activate
 pip install flask
 pip install boto3
 pip freeze > requirements.txt
+```
+* Run:
+```
+sls deploy
 ```
 
 ### References
