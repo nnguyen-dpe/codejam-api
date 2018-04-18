@@ -12,6 +12,7 @@ from datetime import datetime
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/api')
 api = Api(blueprint, version='1.0', title='User API', description='Sample api to manage users')
+ns = api.namespace('v1', 'Operations on user resources')
 app.register_blueprint(blueprint)
 log = logging.getLogger(__name__)
 
@@ -27,8 +28,6 @@ if IS_OFFLINE:
 else:
     client = boto3.client('dynamodb')
 
-# ==== API ====
-ns = api.namespace('v1', 'Operations on user resources')
 
 # ==== MODEL DEFINITIONS ==== 
 user_view = api.model('User', {
