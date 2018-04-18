@@ -38,11 +38,19 @@ class Developer(object):
         self.skills = skills
         self.created_date = datetime.now()
 
+# ===== PARSER ====
+req_args = reqparse.RequestParser()
+req_args.add_argument('name', type=str, required=False, help='Name of developer')
+req_args.add_argument('team', type=str, required=False, help='Name of team')
+
 # ===== SERVICE CLASS =====
 class DeveloperService(object):
     def __init__(self):
         self.counter = 0
         self.developers = []
+
+    def search(self, name, team): 
+        return self.developers
 
     def get(self, id):
         for developer in self.developers:
@@ -109,9 +117,13 @@ class DeveloperCollection(Resource):
     @api.marshal_with(developer_list_view)
     @api.response(200, 'Success')
     @api.doc('Get all developers')
+    @api.expect(req_args)
     def get(self, **kwargs):
+        args = req_args.parse_args(request)
+        name = args.get('name')
+        team = args.get('team')
         return {
-            "items": devServ.developers
+            "items": devServ.search(team, name)
         }
         
     @api.marshal_with(developer_view)
