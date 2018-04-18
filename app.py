@@ -16,18 +16,6 @@ ns = api.namespace('v1', 'Operations on user resources')
 app.register_blueprint(blueprint)
 log = logging.getLogger(__name__)
 
-USERS_TABLE = os.environ['USERS_TABLE']
-IS_OFFLINE = os.environ.get('IS_OFFLINE')
-
-if IS_OFFLINE:
-    client = boto3.client(
-        'dynamodb',
-        region_name='localhost',
-        endpoint_url='http://localhost:8000'
-    )
-else:
-    client = boto3.client('dynamodb')
-
 
 # ==== MODEL DEFINITIONS ==== 
 user_view = api.model('User', {
@@ -90,17 +78,6 @@ class UserCollection(Resource):
     def post(self, **kwargs):
         user_id = request.json.get('user_id')
         name = request.json.get('name')
-        if not user_id or not name:
-            return jsonify({'error': 'Please provider user_id and name'}), 400
-
-        client.put_item(
-            TableName=USERS_TABLE,
-            Item={
-                'user_id': {'S': user_id},
-                'name': {'S': name}
-            }
-        )
-
         return jsonify({
             'user_id': user_id,
             'name': name
