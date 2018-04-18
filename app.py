@@ -11,18 +11,18 @@ from datetime import datetime
 # ==== INIT ====
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/api')
-api = Api(blueprint, version='1.0', title='User API', description='Sample api to manage users')
-ns = api.namespace('v1', 'Operations on user resources')
+api = Api(blueprint, version='1.0', title='Developer API', description='Sample api to manage developers')
+ns = api.namespace('v1', 'Operations on developer resources')
 app.register_blueprint(blueprint)
 log = logging.getLogger(__name__)
 
 
 # ==== MODEL DEFINITIONS ==== 
 developer_view = api.model('Developer', {
-    'id': fields.Integer(required=True, min=0),
+    'id': fields.Integer(),
     'name': fields.String(required=True, min_length=3, max_length=200),
     'team': fields.String(required=True, min_length=3, max_length=200),
-    'skills': fields.List(required=True),
+    'skills': fields.List(fields.String),
     'created_date': fields.DateTime(dt_format='iso8601'),
 })
 
@@ -53,6 +53,7 @@ class DeveloperService(object):
     def create(self, data):
         developer = data
         developer['id'] = self.counter = self.counter + 1
+        developer['created_date'] = datetime.now()
         self.developers.append(developer)
         return developer
 
@@ -65,55 +66,60 @@ class DeveloperService(object):
         developer = self.get(id)
         self.developers.remove(developer)
 
+# init with some data
+devServ = DeveloperService()
+devServ.create({
+    'name': 'Nam',
+    'team': 'TheBugSpikers',
+    'skills': ['test','dev','manage']
+})
+devServ.create({
+    'name': 'Rahul',
+    'team': 'TheBugSpikers',
+    'skills': ['test', 'dev', 'manage']
+})
+devServ.create({
+    'name': 'Sohrab',
+    'team': 'TheBugSpikers',
+    'skills': ['test', 'dev', 'manage']
+})
 
 # ==== FUNCTIONS ====
 @ns.route('/health')
 class HealthCheck(Resource):
     def get(self):
         return {
-            'message': 'Server is healthy'
+            'message': 'Server is healthy, checked at: ' + str(datetime.now())
         }
 
-@ns.route('/users/<string:user_id>')
-@api.doc(params={'user_id': 'User identifier'})
+@ns.route('/developers/<int:id>')
+@ns.response(404, 'Developer not found')
+@api.doc(params={'id': 'Developer identifier'})
 class UserSingle(Resource):
-    @api.marshal_with(user_view, code=200, description='User response')
+    @api.marshal_with(developer_view, code=200, description='Developer response')
     @api.response(200, 'Success')
-    @api.doc('Get single user')
-    def get(self, **kwargs):
+    @api.doc('Get single developer')
+    def get(self, id):
         log.info('Hello')
-        return Developer(1, 'Demo')
-    
-    @api.expect(user_view, validate=True)
-    @api.response(202, 'User updated')
-    @api.doc('Update existing user')
-    def put(self, **kwargs):
-        return request.json
+        return devServ.get(id)
 
 
-@ns.route('/users')
-class UserCollection(Resource):
-    @api.marshal_with(user_list_view)
+@ns.route('/developers')
+class DeveloperCollection(Resource):
+    @api.marshal_with(developer_list_view)
     @api.response(200, 'Success')
-    @api.doc('Get all users')
+    @api.doc('Get all developers')
     def get(self, **kwargs):
-        list = []
-        for x in range(10):
-            list.append(User(x, 'Test' + str(x)))
         return {
-            'items': list
+            "items": devServ.developers
         }
-
-    @api.response(201, 'User created')
-    @api.expect(user_view, validate=True)
-    @api.doc('Create new user')
+        
+    @api.marshal_with(developer_view)
+    @api.response(201, 'Developer created')
+    @api.expect(developer_view, validate=True)
+    @api.doc('Create new developer')
     def post(self, **kwargs):
-        user_id = request.json.get('user_id')
-        name = request.json.get('name')
-        return jsonify({
-            'user_id': user_id,
-            'name': name
-        })
+        return devServ.create(api.payload), 201
 
 # def get_user(user_id):
 #     resp = client.get_item(

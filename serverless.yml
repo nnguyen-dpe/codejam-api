@@ -9,7 +9,7 @@ plugins:
   - serverless-offline
 
 custom:
-  # tableName: 'users-table-${self:provider.stage}'
+  # tableName: 'developers-table-${self:provider.stage}'
   wsgi:
     app: app.app
     packRequirements: false
@@ -49,22 +49,18 @@ functions:
     events:
       - http: ANY /api
       - http: 'ANY {proxy+}'
-  getUser:
+  getDeveloper:
     handler: wsgi.handler
     events:
-      - http: 'GET /api/v1/users/{proxy+}'
-  updateUser:
+      - http: 'GET /api/v1/developers/{proxy+}'
+  createDeveloper:
     handler: wsgi.handler
     events:
-      - http: 'PUT /api/v1/users/{proxy+}'
-  createUser:
+      - http: 'POST /api/v1/developers'
+  getDevelopers:
     handler: wsgi.handler
     events:
-      - http: 'POST /api/v1/users'
-  getUsers:
-    handler: wsgi.handler
-    events:
-      - http: 'GET /api/v1/users'
+      - http: 'GET /api/v1/developers'
 
 # resources:
 #   Resources:
