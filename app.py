@@ -18,20 +18,24 @@ log = logging.getLogger(__name__)
 
 
 # ==== MODEL DEFINITIONS ==== 
-user_view = api.model('User', {
-    'user_id': fields.Integer(required=True, min=0),
+developer_view = api.model('Developer', {
+    'id': fields.Integer(required=True, min=0),
     'name': fields.String(required=True, min_length=3, max_length=200),
+    'team': fields.String(required=True, min_length=3, max_length=200),
+    'skills': fields.List(required=True),
     'created_date': fields.DateTime(dt_format='iso8601'),
 })
 
-user_list_view = api.model('UserCollection', {
-    'items': fields.List(fields.Nested(user_view))
+developer_list_view = api.model('DeveloperCollection', {
+    'items': fields.List(fields.Nested(developer_view))
 })
 
-class User(object):
-    def __init__(self, user_id, name):
-        self.user_id = user_id
+class Developer(object):
+    def __init__(self, id, name, team, skills):
+        self.id = id
         self.name = name
+        self.team = team
+        self.skills = skills
         self.created_date = datetime.now()
 
 # ==== FUNCTIONS ====
