@@ -38,6 +38,34 @@ class Developer(object):
         self.skills = skills
         self.created_date = datetime.now()
 
+# ===== SERVICE CLASS =====
+class DeveloperService(object):
+    def __init__(self):
+        self.counter = 0
+        self.developers = []
+
+    def get(self, id):
+        for developer in self.developers:
+            if developer['id'] == id:
+                return developer
+        api.abort(404, "Developer {} doesn't exist".format(id))
+
+    def create(self, data):
+        developer = data
+        developer['id'] = self.counter = self.counter + 1
+        self.developers.append(developer)
+        return developer
+
+    def update(self, id, data):
+        developer = self.get(id)
+        developer.update(data)
+        return developer
+
+    def delete(self, id):
+        developer = self.get(id)
+        self.developers.remove(developer)
+
+
 # ==== FUNCTIONS ====
 @ns.route('/health')
 class HealthCheck(Resource):
@@ -54,7 +82,7 @@ class UserSingle(Resource):
     @api.doc('Get single user')
     def get(self, **kwargs):
         log.info('Hello')
-        return User(1, 'Demo')
+        return Developer(1, 'Demo')
     
     @api.expect(user_view, validate=True)
     @api.response(202, 'User updated')
