@@ -40,6 +40,7 @@ pip freeze > requirements.txt
 * Test locally:
 ```sh
 # Test flask app
+source venv/bin/activate
 sls wsgi serve
 
 # Test off line Aws lambda and gateway
