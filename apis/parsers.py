@@ -33,6 +33,6 @@ Sort the results by the given field(s) and direction in format
     """)
 
 _post_dev_req = reqparse.RequestParser()
-# _post_dev_req.add_argument(
-#     'name', type=str, required=True, location='json', help='Name is required'
-# )
+_post_dev_req.add_argument(
+    'name', type=str, required=True, location='json', help='Name is required'
+)

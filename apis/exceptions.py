@@ -18,5 +18,5 @@ class NotFoundException(Exception):
 
 class ApiError(Enum):
     NotFound = 404
-    BadRequest = 400
+    InvalidRequest = 400
     InternalServerError = 500

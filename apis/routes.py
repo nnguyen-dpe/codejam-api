@@ -48,7 +48,7 @@ class DeveloperCollection(Resource):
             data = request.json
             return _srv.create(data), 201
         except:
-            #raise InvalidRequestException('Bad request')
+            # raise InvalidRequestException('Bad request')
             return {
                 'errorCode': 'BadRequest',
                 'errorDescription': 'Bad'
@@ -66,9 +66,9 @@ class DeveloperSingle(Resource):
         obj = _srv.getOne(id)
         if obj:
             return obj, 200
+        
         return {
             'errorCode': 'NotFound',
-            'errorDescription': 'Bad not found'
+            'errorDescription': 'Developer not found for id: ' + id 
         }, 404
-        #raise NotFoundException('Developer not found for id: ' + id)
 

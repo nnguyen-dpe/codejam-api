@@ -3,13 +3,21 @@
 
 ## What is this repository for? 
 
-* 2018-04-18 Forum
+* 2018-04-18 Forum: 
+* Learn to build cool stuff? Join #track-developer
 
-## Cooking ingredients? 
-- Python Flask, Flask RestPlus
-- Serverless Framework
-- AWS Lambda, AWS DynamoDB
-- Swagger 2.0
+
+## Ingredients? 
+| Tech                  | Awesomeness   | Why we choose |
+| --------------------- |:--------------|-------------- |
+| Python                | ******        | Trendy!        |
+| Flask, Flask RestPlus | ******        | Get stuff done!   |
+| Serverless Framework  | ********      | Bleeding edge!              |
+| AWS Lambda            | ********      | NoOps?              |
+| AWS DynamoDB          | **            | What is NoSQL? |
+| Swagger 2.0           | *             | Have no choice!|
+
+
 
 ## How do I get set up & running? 
 
@@ -37,11 +45,15 @@ pip install boto3
 pip install flask-restplus
 pip freeze > requirements.txt
 ```
-* Test locally:
+* Test & dev locally:
 ```sh
 # Test flask app
 source venv/bin/activate
-sls wsgi serve
+sls wsgi serve -p 9000
+
+# Run integration test
+cd forum-01-developers-api/_integration-tests
+./gradlew clean test
 
 # Test off line Aws lambda and gateway
 sls offline
@@ -69,7 +81,14 @@ sls remove
 
 ## Todos:
 
-* CI/CD using CodePipeline & CodeBuild
-* Deploy to kubernetes cluster (OpenWhisk/Kubeless)
-* Add unit tests
-* Refactor app structure using blueprint
+* Add unit tests & mock framework
+* Debugging local & live function
+* CI/CD via CodePipeline & CodeBuild
+* Add Auth layer
+* Monitoring with IOPipe
+* Package and deploy to kube/ose (OpenWhisk/Kubeless/Fission)
+
+## Developers:
+
+* Nam Nguyen 
+* Rahul Sharma

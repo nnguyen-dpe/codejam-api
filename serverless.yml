@@ -64,7 +64,7 @@ functions:
 
 resources:
   Resources:
-    UsersDynamoDBTable:
+    DevelopersDynamoDBTable:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:
