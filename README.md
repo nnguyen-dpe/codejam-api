@@ -1,12 +1,12 @@
 # SERVERLESS POC
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-## What is this repository for? 
+## What is this repository for?
 
 * Brown bag session
 
 
-## Stack? 
+## Stack?
 | Tech                  |
 | --------------------- |
 | Python                |
@@ -17,9 +17,9 @@
 
 
 
-## How do I get set up & running? 
+## How do I get set up & running?
 
-* Prerequisites: 
+* Prerequisites:
 ```sh
 node, npm, python3, pip3, virtualenv
 ```
@@ -94,5 +94,4 @@ sls remove
 
 ## Developers:
 
-* Nam Nguyen 
-* Rahul Sharma
+* Nam Nguyen <nnguyen2@deloitte.com.au>
