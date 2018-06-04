@@ -5,43 +5,26 @@ service: serverless-flask
 plugins:
   - serverless-python-requirements
   - serverless-wsgi
-  - serverless-dynamodb-local
   - serverless-offline
 
 custom:
-  tableName: 'developers-table-${self:provider.stage}'
   wsgi:
     app: app.app
     packRequirements: false
   pythonRequirements:
     dockerizePip: non-linux
-  dynamodb:
-    start:
-      migrate: true
 
 package:
   exclude:
     - node_modules/**
     - venv/**
+    - virtualenv/**
 
 provider:
   name: aws
   runtime: python3.6
   stage: dev
   region: ap-southeast-2
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource:
-        - { "Fn::GetAtt": ["DevelopersDynamoDBTable", "Arn" ] }
-  environment:
-    DEVELOPERS_TABLE: ${self:custom.tableName}
 
 functions:
   app:
@@ -61,61 +44,3 @@ functions:
     handler: wsgi.handler
     events:
       - http: 'GET /api/v1/developers'
-
-resources:
-  Resources:
-    DevelopersDynamoDBTable:
-      Type: 'AWS::DynamoDB::Table'
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: name
-            AttributeType: S
-          - AttributeName: team
-            AttributeType: S
-          - AttributeName: skills
-            AttributeType: S
-          - AttributeName: created_at
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        GlobalSecondaryIndexes:
-          - IndexName: DeveloperNameIndex
-            KeySchema:
-              - AttributeName: created_at
-                KeyType: HASH
-              - AttributeName: name
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-          - IndexName: DeveloperTeamIndex
-            KeySchema:
-              - AttributeName: created_at
-                KeyType: HASH
-              - AttributeName: team
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1    
-          - IndexName: DeveloperSkillIndex
-            KeySchema:
-              - AttributeName: created_at
-                KeyType: HASH
-              - AttributeName: skills
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1    
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:custom.tableName}

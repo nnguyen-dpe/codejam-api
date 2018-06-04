@@ -42,15 +42,14 @@ class DeveloperCollection(Resource):
     #@api.marshal_with(_developer, code=201, description='Developer created')
     @api.expect(_developer)
     @api.doc(description='Create a new developer', id='createDeveloper')
-    def post(self, **kwargs):
+    def post(self, **kwargs):        
         try:
             _post_dev_req.parse_args(request)
             data = request.json
             return _srv.create(data), 201
         except:
-            # raise InvalidRequestException('Bad request')
             return {
-                'errorCode': 'BadRequest',
+                'errorCode': 'InvalidRequest',
                 'errorDescription': 'Bad'
             }, 400
 
@@ -72,3 +71,28 @@ class DeveloperSingle(Resource):
             'errorDescription': 'Developer not found for id: ' + id 
         }, 404
 
+
+
+@ns.route('/developers/<string:id>/avatar', 
+    doc={'params': {'id': 'Developer id'}})
+@api.response(404, 'Resource not found', _err)
+@api.response(500, 'Internal server error', _err)
+class DeveloperAvatarSingle(Resource):
+    @api.doc(description='Get developer avatar', id='getDeveloperAvatar')
+    def get(self, id):
+        obj = _srv.getOne(id)
+        if obj:
+            return obj, 200
+
+        return {
+            'errorCode': 'NotFound',
+            'errorDescription': 'Developer not found for id: ' + id
+        }, 404
+
+
+@ns.route('/avatars/upload')
+@api.response(500, 'Internal server error', _err)
+class AvatarUpload(Resource):
+    @api.doc(description='Upload avatar', id='uploadAvatar')
+    def post(self):
+        return {}, 200

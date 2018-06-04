@@ -1,26 +1,20 @@
 import os
-import boto3
+import pymongo
 import uuid
 import logging
 import math
 from datetime import datetime
 from apis.exceptions import ApiError
+from pymongo import MongoClient
 
 log = logging.getLogger(__name__)
 
 class DeveloperService(object):
 
     def __init__(self):
-        offline = os.environ.get('IS_OFFLINE')
-        if offline:
-            self.client = boto3.client(
-                'dynamodb',
-                region_name='localhost',
-                endpoint_url='http://localhost:8000'
-            )
-        else:
-            self.client = boto3.client('dynamodb')
-        self.table_name = os.environ['DEVELOPERS_TABLE']
+        self.client = MongoClient('mongodb://root:hello@192.168.99.100:32089')
+        self.db = self.client.developerdb
+        self.developers = self.db.developers
     
     def search(self, args):
         page = args.get('page')
@@ -31,12 +25,10 @@ class DeveloperService(object):
         skills = args.get('skills')
 
         # get all
-        resp = self.client.scan(
-            TableName=self.table_name
-        )
+        resp = self.developers.find({})
             
         # map
-        foundItems = resp.get('Items')
+        foundItems = resp
         items = []
         for it in foundItems:
             items.append(self.__mapOne(it))
@@ -109,14 +101,8 @@ class DeveloperService(object):
 
 
     def getOne(self, id):
-        resp = self.client.get_item(
-            TableName=self.table_name,
-            Key={
-                'id': { 'S': id }
-            }
-        )
-        
-        item = resp.get('Item')
+        resp = self.developers.find_one({'id': id})
+        item = resp
         if not item:
             return None
        
@@ -124,10 +110,10 @@ class DeveloperService(object):
 
     def __mapOne(self, item):
         return {
-            'id': item.get('id').get('S'),
-            'name': item.get('name').get('S'),
-            'team': item.get('team').get('S'),
-            'skills': self.__deserialiseSkills(item.get('skills').get('S'))
+            'id': item['id'],
+            'name': item['name'],
+            'team': item['team'],
+            'skills': self.__deserialiseSkills(item['skills'])
         }
     
     def __serialiseSkills(self, skills):
@@ -140,17 +126,13 @@ class DeveloperService(object):
 
     def create(self, data):
         id = str(uuid.uuid4())
-        
-        self.client.put_item(
-            TableName=self.table_name,
-            Item={
-                'id': { 'S': id },
-                'name': { 'S': data.get('name') },
-                'team': { 'S': data.get('team') },
-                'skills': { 
-                    'S': self.__serialiseSkills(data.get('skills'))
-                },
-                'created_at': { 'S': datetime.now().isoformat() }
+
+        self.developers.insert_one({
+                'id': id,
+                'name': data.get('name'),
+                'team': data.get('team'),
+                'skills': self.__serialiseSkills(data.get('skills')),
+                'created_at': datetime.now().isoformat()
             }
         )
 

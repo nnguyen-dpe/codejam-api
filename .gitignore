@@ -195,6 +195,7 @@ venv.bak/
 ### Misc ###
 package-lock.json
 .vscode/
+virtualenv/
 .dynamodb
 
 # End of https://www.gitignore.io/api/node,macos,python,serverless
