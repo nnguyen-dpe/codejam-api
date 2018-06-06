@@ -94,4 +94,4 @@ sls remove
 
 ## Developers:
 
-* Nam Nguyen <nnguyen2@deloitte.com.au> - Deloitte DPE
+* Nam Nguyen <nnguyen2@deloitte.com.au> - Deloitte DPE - Aus
