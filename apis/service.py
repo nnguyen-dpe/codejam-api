@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class DeveloperService(object):
 
     def __init__(self):
-        self.client = MongoClient('mongodb://root:hello@192.168.99.100:32089')
+        self.client = MongoClient('mongodb://root:hello@192.168.99.100:31459')
         self.db = self.client.developerdb
         self.developers = self.db.developers
     
@@ -113,7 +113,8 @@ class DeveloperService(object):
             'id': item['id'],
             'name': item['name'],
             'team': item['team'],
-            'skills': self.__deserialiseSkills(item['skills'])
+            'skills': self.__deserialiseSkills(item['skills']),
+            'pullRequest': item['pull_request']
         }
     
     def __serialiseSkills(self, skills):
