@@ -57,6 +57,15 @@ cd forum-01-developers-api/_integration-tests
 docker run --rm -v "$PWD:/tmp" openwhisk/python3action bash \
   -c "cd tmp && virtualenv virtualenv --python=python3 && source virtualenv/bin/activate && pip install -r requirements.txt"
 
+# Pack
+zip -r codejam-api.zip __main__.py app.py apis flaskwsk virtualenv serverless.yml requirements.txt package.json README.md
+
+# Create action
+wsk -i action create codejamapi --kind python:3 codejam-api.zip --web raw
+
+# Get action url
+wsk -i action get codejamapi --url
+
 ```
 
 # Test off line Aws lambda and gateway
