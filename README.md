@@ -9,7 +9,7 @@
 ## Stack?
 | Tech                  |
 | --------------------- |
-| Python                |
+| Python 3              |
 | Flask, Flask RestPlus |
 | Serverless Framework  |
 | MongoDB               |
