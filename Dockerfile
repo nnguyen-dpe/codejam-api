@@ -3,6 +3,7 @@ FROM amaysim/serverless:1.27.1
 WORKDIR /opt/app
 RUN git clone https://github.com/nnguyen-dpe/codejam-api.git
 RUN cd codejam-api && \
+    git checkout master && \
     pwd && \
     npm i --save-dev serverless-wsgi serverless-python-requirements serverless-offline && \
     pip3 install virtualenv && \
