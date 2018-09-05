@@ -61,7 +61,8 @@ docker run --rm -v "$PWD:/tmp" openwhisk/python3action bash \
 zip -r codejam-api.zip __main__.py app.py apis flaskwsk virtualenv serverless.yml requirements.txt package.json README.md
 
 # Create action
-wsk -i action create codejamapi --kind python:3 codejam-api.zip --web raw
+wsk -i action create codejamapi --kind python:3 codejam-api.zip --web raw -t 15000
+wsk -i action update codejamapi --kind python:3 codejam-api.zip --web raw
 
 # Get action url
 wsk -i action get codejamapi --url

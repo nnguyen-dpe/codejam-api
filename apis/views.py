@@ -18,7 +18,7 @@ _developer = api.model('Developer', {
     'name': fields.String(required=True, min_length=3, max_length=200),
     'team': fields.String(required=False),
     'skills': fields.List(fields.String),
-    'pullRequest': fields.Nested(_pr)
+    # 'pullRequest': fields.Nested(_pr)
 })
 
 _developer_list = api.model('DeveloperCollection', {

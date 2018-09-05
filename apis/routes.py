@@ -1,5 +1,6 @@
 # Define api routes for namespace
 import logging
+import time
 
 from flask import request
 from flask_restplus import Resource, Namespace
@@ -81,6 +82,8 @@ class DeveloperAvatarSingle(Resource):
     @api.doc(description='Get developer avatar', id='getDeveloperAvatar')
     def get(self, id):
         obj = _srv.getOne(id)
+        # sleep
+        time.sleep(61)
         if obj:
             return obj, 200
 
