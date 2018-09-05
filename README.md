@@ -1,27 +1,25 @@
-# THE BUG SPIKERS
+# SERVERLESS POC
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-## What is this repository for? 
+## What is this repository for?
 
-* 2018-04-18 Forum: 
-* Learn to build cool stuff? Join #track-developer
+* Brown bag session
 
 
-## Ingredients? 
-| Tech                  | Awesomeness   | Why we choose |
-| --------------------- |:--------------|-------------- |
-| Python                | ******        | Trendy!        |
-| Flask, Flask RestPlus | ******        | Get stuff done!   |
-| Serverless Framework  | ********      | Bleeding edge!              |
-| AWS Lambda            | ********      | NoOps?              |
-| AWS DynamoDB          | **            | What is NoSQL? |
-| Swagger 2.0           | *             | Have no choice!|
+## Stack?
+| Tech                  |
+| --------------------- |
+| Python 3              |
+| Flask, Flask RestPlus |
+| Serverless Framework  |
+| MongoDB               |
+| Swagger 2.0           |
 
 
 
-## How do I get set up & running? 
+## How do I get set up & running?
 
-* Prerequisites: 
+* Prerequisites:
 ```sh
 node, npm, python3, pip3, virtualenv
 ```
@@ -32,28 +30,44 @@ npm install serverless -g
 * Install:
 ```sh
 git clone git@dpe.bitbucket.org:thebugspikers/codejam-api.git
-cd codejam-api
+cd codejam-api && git checkout feature/openwhisk
 
 npm init -f
-npm install --save-dev serverless-wsgi serverless-python-requirements serverless-dynamodb-local serverless-offline
+npm install --save-dev serverless-wsgi serverless-python-requirements serverless-offline
 
 virtualenv venv --python=python3
 source venv/bin/activate
-
-pip install flask
-pip install boto3
-pip install flask-restplus
-pip freeze > requirements.txt
+pip install -r requirements.txt
 ```
+
 * Test & dev locally:
 ```sh
 # Test flask app
 source venv/bin/activate
-sls wsgi serve -p 9000
+sls wsgi serve -p 9001
 
 # Run integration test
 cd forum-01-developers-api/_integration-tests
 ./gradlew clean test
+
+
+* Setup & package openwhisk environment:
+```sh
+# Run the following to install the dependencies and create a virtualenv using a compatible Docker image:
+docker run --rm -v "$PWD:/tmp" openwhisk/python3action bash \
+  -c "cd tmp && virtualenv virtualenv --python=python3 && source virtualenv/bin/activate && pip install -r requirements.txt"
+
+# Pack
+zip -r codejam-api.zip __main__.py app.py apis flaskwsk virtualenv serverless.yml requirements.txt package.json README.md
+
+# Create action
+wsk -i action create codejamapi --kind python:3 codejam-api.zip --web raw -t 15000
+wsk -i action update codejamapi --kind python:3 codejam-api.zip --web raw
+
+# Get action url
+wsk -i action get codejamapi --url
+
+```
 
 # Test off line Aws lambda and gateway
 sls offline
@@ -90,5 +104,4 @@ sls remove
 
 ## Developers:
 
-* Nam Nguyen 
-* Rahul Sharma
+* Nam Nguyen <nnguyen2@deloitte.com.au> - Deloitte DPE - Aus
