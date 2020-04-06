@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class DeveloperService(object):
 
     def __init__(self):
-        self.client = MongoClient('mongodb://root:hello@192.168.99.100:31459')
+        self.client = MongoClient('mongodb://mongo_host:27017')
         self.db = self.client.developerdb
         self.developers = self.db.developers
     
@@ -109,14 +109,17 @@ class DeveloperService(object):
         return self.__mapOne(item)
 
     def __mapOne(self, item):
-        return {
+        re = {
             'id': item['id'],
             'name': item['name'],
             'team': item['team'],
-            'skills': self.__deserialiseSkills(item['skills']),
-            'pullRequest': item['pull_request']
+            'skills': self.__deserialiseSkills(item['skills'])
         }
-    
+
+        # if 'pull_request' in item:
+        #     re['pullRequest'] = item['pull_request']
+        return re
+        
     def __serialiseSkills(self, skills):
         if skills and len(skills) >= 1:
             return ','.join(skills)
